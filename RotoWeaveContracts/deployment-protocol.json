@@ -1,0 +1,9 @@
+{
+  "schemaVersion": 2,
+  "platform": "windows-x64",
+  "treeAlgorithm": "sha256-tree-v1",
+  "environmentCacheSchemaVersion": 1,
+  "sourceCatalogSchemaVersion": 1,
+  "safetyPolicyVersion": 1,
+  "receiptSchemaVersion": 1
+}

@@ -1,0 +1,13 @@
+fastapi>=0.115,<1
+uvicorn[standard]>=0.34,<1
+python-multipart>=0.0.20,<1
+opencv-python-headless>=4.10,<5
+Pillow>=11,<13
+numpy>=2,<3
+httpx>=0.28,<1
+websockets>=15,<17
+aiofiles>=24,<26
+onnxruntime-gpu[cuda,cudnn]==1.26.0; platform_system == "Windows"
+onnxruntime==1.26.0; platform_system != "Windows"
+pystray>=0.19,<1
+pyinstaller>=6,<7

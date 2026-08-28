@@ -1,0 +1,13 @@
+{
+  "schemaVersion": 1,
+  "name": "rotoweave-client",
+  "productVersion": "4.0.0",
+  "sourceRoots": ["app", "backend/app"],
+  "testRoots": ["tests", "backend/tests"],
+  "sharedDependency": "../RotoWeaveContracts",
+  "modelsRoot": "../RotoWeaveModels",
+  "pythonRequirements": "requirements-win-lock.txt",
+  "nodeLock": "package-lock.json",
+  "buildSpec": "RotoWeaveClient.spec",
+  "sourceBuildRoot": "runtime/frontend"
+}

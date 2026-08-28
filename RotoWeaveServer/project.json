@@ -1,0 +1,13 @@
+{
+  "schemaVersion": 1,
+  "name": "rotoweave-server",
+  "productVersion": "4.0.0",
+  "sourceRoots": ["server", "worker/cuda_matting", "server-admin"],
+  "testRoots": ["tests"],
+  "sharedDependency": "../RotoWeaveContracts",
+  "modelsRoot": "../RotoWeaveModels",
+  "pythonRequirements": "requirements-win-lock.txt",
+  "nodeLock": "server-admin/package-lock.json",
+  "buildSpec": "RotoWeaveServer.spec",
+  "sourceBuildRoot": "server-admin/dist"
+}

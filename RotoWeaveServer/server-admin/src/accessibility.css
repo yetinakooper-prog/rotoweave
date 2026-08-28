@@ -1,0 +1,6 @@
+.expected a { color: #78d5ef; }
+.expected a:visited { color: #aabaff; }
+
+@media (prefers-reduced-motion: reduce) {
+  html:focus-within { scroll-behavior: auto; }
+}

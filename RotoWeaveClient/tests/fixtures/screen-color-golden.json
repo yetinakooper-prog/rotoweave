@@ -1,0 +1,10 @@
+[
+  { "name": "green", "screenRgb": [0, 255, 0], "sourceRgb": [40, 180, 30], "expectedRgb": [40, 87, 30] },
+  { "name": "blue", "screenRgb": [0, 0, 255], "sourceRgb": [40, 30, 180], "expectedRgb": [40, 30, 87] },
+  { "name": "red", "screenRgb": [255, 0, 0], "sourceRgb": [180, 40, 30], "expectedRgb": [87, 40, 30] },
+  { "name": "magenta", "screenRgb": [255, 0, 255], "sourceRgb": [180, 40, 170], "expectedRgb": [87, 40, 83] },
+  { "name": "cyan", "screenRgb": [0, 255, 255], "sourceRgb": [40, 180, 170], "expectedRgb": [40, 87, 83] },
+  { "name": "yellow", "screenRgb": [255, 255, 0], "sourceRgb": [180, 170, 40], "expectedRgb": [87, 83, 40] },
+  { "name": "gray", "screenRgb": [128, 128, 128], "sourceRgb": [120, 100, 80], "expectedRgb": [120, 100, 80] },
+  { "name": "pure-screen-no-op", "screenRgb": [255, 0, 255], "sourceRgb": [255, 0, 255], "expectedRgb": [255, 0, 255] }
+]

@@ -1,0 +1,23 @@
+.candidate-import {
+  grid-column: 1 / -1;
+  display: grid;
+  grid-template-columns: minmax(150px, .35fr) minmax(260px, 1fr) auto;
+  gap: 7px;
+}
+
+.candidate-import input,
+.candidate-import select {
+  min-width: 0;
+  background: #0a1219;
+  color: #edf5fb;
+  border: 1px solid #3a4c5d;
+  border-radius: 7px;
+  padding: 8px 9px;
+  font-size: 10px;
+}
+
+@media (max-width: 760px) {
+  .candidate-import {
+    grid-template-columns: 1fr;
+  }
+}

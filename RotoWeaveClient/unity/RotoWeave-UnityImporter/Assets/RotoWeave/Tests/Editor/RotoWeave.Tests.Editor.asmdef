@@ -1,0 +1,22 @@
+{
+  "name": "RotoWeave.Tests.Editor",
+  "rootNamespace": "RotoWeave.Tests.Editor",
+  "references": [
+    "RotoWeave.Editor",
+    "RotoWeave.Runtime"
+  ],
+  "includePlatforms": [
+    "Editor"
+  ],
+  "excludePlatforms": [],
+  "allowUnsafeCode": false,
+  "overrideReferences": false,
+  "precompiledReferences": [],
+  "autoReferenced": false,
+  "defineConstraints": [],
+  "versionDefines": [],
+  "optionalUnityReferences": [
+    "TestAssemblies"
+  ],
+  "noEngineReferences": false
+}

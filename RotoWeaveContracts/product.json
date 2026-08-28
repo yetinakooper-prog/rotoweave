@@ -1,0 +1,23 @@
+{
+  "product": "RotoWeave",
+  "version": "4.0.0",
+  "runtime": {
+    "applicationDataDirectory": "RotoWeave-4.0",
+    "developmentDataDirectory": "RotoWeave-4.0-Dev",
+    "singleInstanceMutex": "Local\\RotoWeave.SingleInstance.v4",
+    "sessionCookieName": "rotoweave_v4_session",
+    "apiPort": 8766,
+    "webDevelopmentPort": 3000
+  },
+  "contracts": {
+    "httpApi": 4,
+    "remoteMattingApi": 1,
+    "workspaceFormat": 3,
+    "runtimeDatabaseSchema": 4,
+    "canonicalPixelsPerUnit": 100.0,
+    "coordinateContract": "frame-transform-unity-curves-v3",
+    "characterPackageFormat": 3,
+    "characterPackageShape": "deduplicated-atlas-v3",
+    "unityScriptedImporter": 8
+  }
+}

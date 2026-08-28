@@ -1,0 +1,39 @@
+{
+  "schemaVersion": 1,
+  "productVersion": "4.0.0",
+  "localApi": {
+    "version": 4,
+    "prefix": "/api/v4"
+  },
+  "remoteMattingApi": {
+    "version": 1,
+    "prefix": "/api/matting/v1",
+    "transport": "http",
+    "authentication": {
+      "scheme": "none"
+    },
+    "idempotencyHeader": "Idempotency-Key",
+    "digest": "sha256",
+    "qualities": ["high", "ultra"],
+    "endpoints": {
+      "submit": "POST /jobs",
+      "status": "GET /jobs/{job_id}",
+      "events": "GET /jobs/{job_id}/events",
+      "cancel": "POST /jobs/{job_id}/cancel",
+      "result": "GET /jobs/{job_id}/result"
+    },
+    "eventType": "text/event-stream",
+    "resultType": "application/zip",
+    "errorCodes": [
+      "incompatible_protocol",
+      "invalid_request",
+      "not_found",
+      "conflict",
+      "cancelled",
+      "model_unavailable",
+      "gpu_out_of_memory",
+      "integrity_failed",
+      "internal_error"
+    ]
+  }
+}

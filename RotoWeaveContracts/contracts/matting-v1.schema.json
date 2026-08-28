@@ -1,0 +1,121 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://rotoweave.tools/contracts/matting-v1.schema.json",
+  "title": "RotoWeave remote matting protocol v1",
+  "type": "object",
+  "oneOf": [
+    { "$ref": "#/$defs/jobSubmission" },
+    { "$ref": "#/$defs/jobStatus" },
+    { "$ref": "#/$defs/progressEvent" },
+    { "$ref": "#/$defs/resultManifest" },
+    { "$ref": "#/$defs/error" }
+  ],
+  "$defs": {
+    "sha256": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+    "inputFrame": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["frameId", "ordinal", "ptsUs", "durationUs", "width", "height", "archivePath", "sha256"],
+      "properties": {
+        "frameId": { "type": "string", "minLength": 1, "maxLength": 160 },
+        "ordinal": { "type": "integer", "minimum": 0 },
+        "ptsUs": { "type": "integer", "minimum": 0 },
+        "durationUs": { "type": "integer", "minimum": 1 },
+        "width": { "type": "integer", "minimum": 1 },
+        "height": { "type": "integer", "minimum": 1 },
+        "archivePath": { "type": "string", "pattern": "^frames/[0-9]{6}\\.[A-Za-z0-9]+$" },
+        "sha256": { "$ref": "#/$defs/sha256" }
+      }
+    },
+    "outputFrame": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["sourceFrameId", "ordinal", "width", "height", "rgbaPath", "rgbaSha256"],
+      "properties": {
+        "sourceFrameId": { "type": "string", "minLength": 1, "maxLength": 160 },
+        "ordinal": { "type": "integer", "minimum": 0 },
+        "width": { "type": "integer", "minimum": 1 },
+        "height": { "type": "integer", "minimum": 1 },
+        "rgbaPath": { "type": "string", "pattern": "^rgba/[0-9]{6}\\.png$" },
+        "rgbaSha256": { "$ref": "#/$defs/sha256" },
+        "emissionPath": { "type": ["string", "null"], "pattern": "^emission/[0-9]{6}\\.png$" },
+        "emissionSha256": { "anyOf": [{ "$ref": "#/$defs/sha256" }, { "type": "null" }] }
+      }
+    },
+    "jobSubmission": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["protocolVersion", "materialId", "materialSha256", "quality", "frameCount", "framesManifestSha256", "archiveSha256", "frames", "settings"],
+      "properties": {
+        "protocolVersion": { "const": 1 },
+        "materialId": { "type": "string", "minLength": 1, "maxLength": 160 },
+        "materialSha256": { "$ref": "#/$defs/sha256" },
+        "quality": { "enum": ["high", "ultra"] },
+        "frameCount": { "type": "integer", "minimum": 1 },
+        "framesManifestSha256": { "$ref": "#/$defs/sha256" },
+        "archiveSha256": { "$ref": "#/$defs/sha256" },
+        "frames": { "type": "array", "minItems": 1, "items": { "$ref": "#/$defs/inputFrame" } },
+        "settings": { "type": "object" }
+      }
+    },
+    "jobStatus": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["protocolVersion", "jobId", "state", "progress"],
+      "properties": {
+        "protocolVersion": { "const": 1 },
+        "jobId": { "type": "string", "minLength": 1 },
+        "state": { "enum": ["queued", "running", "completed", "failed", "cancelled"] },
+        "progress": { "type": "number", "minimum": 0, "maximum": 1 },
+        "stage": { "type": ["string", "null"] },
+        "error": { "anyOf": [{ "$ref": "#/$defs/error" }, { "type": "null" }] }
+      }
+    },
+    "progressEvent": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["protocolVersion", "jobId", "sequence", "state", "progress"],
+      "properties": {
+        "protocolVersion": { "const": 1 },
+        "jobId": { "type": "string", "minLength": 1 },
+        "sequence": { "type": "integer", "minimum": 0 },
+        "state": { "enum": ["queued", "running", "completed", "failed", "cancelled"] },
+        "progress": { "type": "number", "minimum": 0, "maximum": 1 },
+        "stage": { "type": ["string", "null"] },
+        "message": { "type": ["string", "null"] }
+      }
+    },
+    "resultManifest": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["protocolVersion", "jobId", "materialId", "materialSha256", "quality", "frameCount", "frameMappingSha256", "archiveSha256", "frames", "model", "settings"],
+      "properties": {
+        "protocolVersion": { "const": 1 },
+        "jobId": { "type": "string", "minLength": 1 },
+        "materialId": { "type": "string", "minLength": 1 },
+        "materialSha256": { "$ref": "#/$defs/sha256" },
+        "quality": { "enum": ["high", "ultra"] },
+        "frameCount": { "type": "integer", "minimum": 1 },
+        "frameMappingSha256": { "$ref": "#/$defs/sha256" },
+        "archiveSha256": { "$ref": "#/$defs/sha256" },
+        "frames": { "type": "array", "minItems": 1, "items": { "$ref": "#/$defs/outputFrame" } },
+        "model": { "type": "object" },
+        "settings": { "type": "object" }
+      }
+    },
+    "error": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["protocolVersion", "code", "message", "retryable"],
+      "properties": {
+        "protocolVersion": { "const": 1 },
+        "code": {
+          "enum": ["incompatible_protocol", "invalid_request", "unauthorized", "not_found", "conflict", "cancelled", "model_unavailable", "gpu_out_of_memory", "integrity_failed", "internal_error"]
+        },
+        "message": { "type": "string", "minLength": 1 },
+        "retryable": { "type": "boolean" },
+        "detail": { "type": ["object", "null"] }
+      }
+    }
+  }
+}

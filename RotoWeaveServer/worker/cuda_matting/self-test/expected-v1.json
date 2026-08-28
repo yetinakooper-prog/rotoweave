@@ -1,0 +1,26 @@
+{
+  "sam2matting-bplus": {
+    "alphaMin": {"min": 0.0, "max": 0.1},
+    "alphaMax": {"min": 0.8, "max": 1.0},
+    "alphaMean": {"min": 0.20, "max": 0.26},
+    "foregroundRatio": {"min": 0.20, "max": 0.26}
+  },
+  "corridorkey-green": {
+    "alphaMin": {"min": 0.0, "max": 0.1},
+    "alphaMax": {"min": 0.8, "max": 1.0},
+    "alphaMean": {"min": 0.19, "max": 0.26},
+    "foregroundRatio": {"min": 0.19, "max": 0.26}
+  },
+  "corridorkey-blue": {
+    "alphaMin": {"min": 0.0, "max": 0.1},
+    "alphaMax": {"min": 0.8, "max": 1.0},
+    "alphaMean": {"min": 0.19, "max": 0.26},
+    "foregroundRatio": {"min": 0.19, "max": 0.26}
+  },
+  "vitmatte-base": {
+    "alphaMin": {"min": 0.0, "max": 0.1},
+    "alphaMax": {"min": 0.8, "max": 1.0},
+    "alphaMean": {"min": 0.20, "max": 0.26},
+    "foregroundRatio": {"min": 0.20, "max": 0.26}
+  }
+}

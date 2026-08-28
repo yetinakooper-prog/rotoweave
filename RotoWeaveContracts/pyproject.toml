@@ -1,0 +1,16 @@
+[build-system]
+requires = ["setuptools>=80"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "rotoweave-contracts"
+version = "4.0.0"
+description = "RotoWeave shared product, protocol, integrity, and model contracts"
+requires-python = ">=3.12"
+dependencies = []
+
+[tool.setuptools]
+packages = ["contracts"]
+
+[tool.setuptools.package-data]
+contracts = ["*.json"]

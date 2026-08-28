@@ -1,0 +1,26 @@
+# RotoWeave 4.0 Ultra overlay for Windows x64 / CPython 3.10.11.
+# The overlay inherits the immutable High site-packages through python310._pth.
+# Install with --no-deps so High cannot be changed by Ultra dependency solving.
+--index-url https://download.pytorch.org/whl/cu128
+--extra-index-url https://pypi.org/simple
+
+decord==0.6.0
+einops==0.8.2
+ftfy==6.1.1
+ImageIO==2.37.4
+lazy-loader==0.5
+numpy==1.26.4
+opencv-python-headless==4.10.0.84
+pandas==2.3.3
+psutil==7.2.2
+pycocotools==2.0.11
+python-dateutil==2.9.0.post0
+pytz==2026.3.post1
+regex==2026.7.19
+scikit-image==0.25.2
+scipy==1.15.3
+six==1.17.0
+tifffile==2025.5.10
+triton-windows==3.4.0.post21
+tzdata==2026.3
+wcwidth==0.8.2

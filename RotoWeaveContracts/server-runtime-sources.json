@@ -1,0 +1,120 @@
+{
+  "schemaVersion": 1,
+  "platform": "windows-x64",
+  "python": {
+    "id": "python-3.10.11-embed-amd64",
+    "version": "3.10.11",
+    "url": "https://www.python.org/ftp/python/3.10.11/python-3.10.11-embed-amd64.zip",
+    "filename": "python-3.10.11-embed-amd64.zip",
+    "bytes": 8629277,
+    "sha256": "608619f8619075629c9c69f361352a0da6ed7e62f83a0e19c63e0ea32eb7629d",
+    "authenticodePublisher": "Python Software Foundation",
+    "licenseId": "PSF-2.0"
+  },
+  "projectSearchPaths": [
+    "..\\..\\..",
+    "..\\..\\..\\..\\RotoWeaveContracts"
+  ],
+  "bootstrapPackages": [
+    "pip==25.3",
+    "setuptools==80.10.2",
+    "wheel==0.48.0"
+  ],
+  "runtimeWheels": [
+    {
+      "id": "torch-2.8.0-cu128-cp310-win-amd64",
+      "url": "https://download-r2.pytorch.org/whl/cu128/torch-2.8.0%2Bcu128-cp310-cp310-win_amd64.whl",
+      "filename": "torch-2.8.0+cu128-cp310-cp310-win_amd64.whl",
+      "bytes": 3461427674,
+      "sha256": "43938e9a174c90e5eb9e906532b2f1e21532bbfa5a61b65193b4f54714d34f9e",
+      "etag": "\"48f6f16bd4fa908d34ea4c5f71d59826-17\"",
+      "segments": 32
+    },
+    {
+      "id": "torchvision-0.23.0-cu128-cp310-win-amd64",
+      "url": "https://download-r2.pytorch.org/whl/cu128/torchvision-0.23.0%2Bcu128-cp310-cp310-win_amd64.whl",
+      "filename": "torchvision-0.23.0+cu128-cp310-cp310-win_amd64.whl",
+      "bytes": 7540139,
+      "sha256": "8ec6f2281ef5d52471b01b99eb04243d0c2cccb1972ba43217085025fe5a6c3f",
+      "etag": "\"138d9bc86240a061fc1108a332c0bf06\"",
+      "segments": 1
+    }
+  ],
+  "sources": [
+    {
+      "id": "sam2matting-source",
+      "revision": "73dd721d77b56749248aefe5e8824d7f61b9d13c",
+      "url": "https://github.com/FudanCVL/SAM2Matting/archive/73dd721d77b56749248aefe5e8824d7f61b9d13c.zip",
+      "filename": "SAM2Matting-73dd721d77b56749248aefe5e8824d7f61b9d13c.zip",
+      "maxBytes": 536870912,
+      "includePath": "sam2",
+      "targetPath": "SAM2Matting/sam2",
+      "tree": {
+        "algorithm": "sha256-tree-v1",
+        "fileCount": 29,
+        "bytes": 263219,
+        "sha256": "3d612230b26b5e9aeff07adc55a8f5c61b85dfc40019c6a964e5bd89df698d95"
+      },
+      "licenseId": "Apache-2.0"
+    },
+    {
+      "id": "corridorkey-source",
+      "revision": "97e55a453060745bead1befd293f6e523c4b845c",
+      "url": "https://github.com/nikopueringer/CorridorKey/archive/97e55a453060745bead1befd293f6e523c4b845c.zip",
+      "filename": "CorridorKey-97e55a453060745bead1befd293f6e523c4b845c.zip",
+      "maxBytes": 134217728,
+      "includePath": "CorridorKeyModule",
+      "targetPath": "CorridorKey/CorridorKeyModule",
+      "tree": {
+        "algorithm": "sha256-tree-v1",
+        "fileCount": 9,
+        "bytes": 73032,
+        "sha256": "3040036e2e71ae78dafb3a9bd7175d872d0e54c95dceea5f71a0252a7d02ffb9"
+      },
+      "licenseId": "Apache-2.0"
+    },
+    {
+      "id": "vitmatte-source",
+      "revision": "8cd7ef068380977c3962c4cb733cb1fe7f2241a5",
+      "url": "https://github.com/hustvl/ViTMatte/archive/8cd7ef068380977c3962c4cb733cb1fe7f2241a5.zip",
+      "filename": "ViTMatte-8cd7ef068380977c3962c4cb733cb1fe7f2241a5.zip",
+      "maxBytes": 134217728,
+      "includePath": "modeling",
+      "targetPath": "ViTMatte/modeling",
+      "tree": {
+        "algorithm": "sha256-tree-v1",
+        "fileCount": 11,
+        "bytes": 35446,
+        "sha256": "3f7588160c0c5c13a160da8c97b2edbc5fb646087a74398e45eb7af119f02d9e"
+      },
+      "licenseId": "Apache-2.0"
+    },
+    {
+      "id": "sam3-source",
+      "revision": "96914d2425f90a64f45ca977c2b5165418099543",
+      "url": "https://github.com/facebookresearch/sam3/archive/96914d2425f90a64f45ca977c2b5165418099543.zip",
+      "filename": "SAM3-96914d2425f90a64f45ca977c2b5165418099543.zip",
+      "maxBytes": 536870912,
+      "includePath": "sam3",
+      "targetPath": "SAM3/sam3",
+      "tree": {
+        "algorithm": "sha256-tree-v1",
+        "fileCount": 193,
+        "bytes": 4787734,
+        "sha256": "1bafe07e20d8fd7b2855b94b54bee37bec7b1a0545ec11c3a22ef5a461bb9295"
+      },
+      "licenseId": "SAM-License"
+    }
+  ],
+  "profiles": {
+    "high": {
+      "requirements": "RotoWeaveServer/requirements-high-runtime-lock.txt",
+      "sources": ["sam2matting-source", "corridorkey-source", "vitmatte-source"]
+    },
+    "ultra": {
+      "baseProfile": "high",
+      "requirements": "RotoWeaveServer/requirements-ultra-overlay-lock.txt",
+      "sources": ["sam2matting-source", "corridorkey-source", "vitmatte-source", "sam3-source"]
+    }
+  }
+}

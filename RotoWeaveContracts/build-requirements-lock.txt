@@ -1,0 +1,2 @@
+# Build backend required to install the shared contracts package on a fresh Python 3.12 venv.
+setuptools==84.0.0

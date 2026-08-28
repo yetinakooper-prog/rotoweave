@@ -1,0 +1,15 @@
+{
+  "baselineHighMs": [10000, 10020, 9980],
+  "brushRoiComputeMs": [50, 55, 60],
+  "commit1080Ms": [320, 340, 360],
+  "commit4kMs": [1000, 1100, 1200],
+  "cpuBiRefNetMs": [5640, 5680, 5600],
+  "cudaBiRefNetMs": [1400, 1450, 1420],
+  "cudaHighMs": [4200, 4300, 4250],
+  "gpuEndMiB": [4200, 4210, 4190],
+  "gpuPeakMiB": [5000, 5050, 5020],
+  "gpuStartMiB": [4200, 4200, 4200],
+  "schemaVersion": 1,
+  "webgl1080Ms": [8, 10, 12],
+  "webgl4kMs": [20, 22, 24]
+}

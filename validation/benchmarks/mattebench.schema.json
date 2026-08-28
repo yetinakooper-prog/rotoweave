@@ -1,0 +1,91 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://internal.rotoweavetools.local/schemas/mattebench-v1.json",
+  "title": "RotoWeave MatteBench v1 paired measurements",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "benchmark", "records"],
+  "properties": {
+    "schemaVersion": { "const": 1 },
+    "benchmark": { "const": "MatteBench-v1" },
+    "records": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "$ref": "#/$defs/record" }
+    }
+  },
+  "$defs": {
+    "pair": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["hybridV5", "candidateV3"],
+      "properties": {
+        "hybridV5": { "type": "number", "minimum": 0 },
+        "candidateV3": { "type": "number", "minimum": 0 }
+      }
+    },
+    "record": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "route", "categories", "sourceKind", "frameCount", "metrics"],
+      "properties": {
+        "id": { "type": "string", "minLength": 1 },
+        "route": {
+          "enum": ["chroma_character", "emissive_vfx"]
+        },
+        "categories": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "enum": [
+              "green_screen",
+              "blue_screen",
+              "hair",
+              "fine_lines",
+              "motion_blur",
+              "translucent_material",
+              "cyan_white_purple_emission",
+              "smoke",
+              "independent_particles",
+              "green_subject",
+              "compression",
+              "clipping"
+            ]
+          }
+        },
+        "sourceKind": {
+          "enum": ["synthetic-ground-truth", "blind-real"]
+        },
+        "blindModelNames": { "type": "boolean" },
+        "frameCount": { "type": "integer", "minimum": 1 },
+        "metrics": {
+          "type": "object",
+          "minProperties": 1,
+          "additionalProperties": false,
+          "properties": {
+            "boundaryColorError": { "$ref": "#/$defs/pair" },
+            "screenResidue": { "$ref": "#/$defs/pair" },
+            "lowAlphaEmissionError": { "$ref": "#/$defs/pair" },
+            "temporalFlicker": { "$ref": "#/$defs/pair" },
+            "manualCorrectionMinutes": { "$ref": "#/$defs/pair" },
+            "subjectCoreDamage": { "$ref": "#/$defs/pair" },
+            "particleRecall": { "$ref": "#/$defs/pair" }
+          }
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": { "sourceKind": { "const": "blind-real" } },
+            "required": ["sourceKind"]
+          },
+          "then": {
+            "required": ["blindModelNames"],
+            "properties": { "blindModelNames": { "const": true } }
+          }
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "name": "@rotoweave/contracts",
+  "version": "4.0.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    "./product.json": "./product.json",
+    "./protocols.json": "./contracts/protocols.json",
+    "./matting-v1.schema.json": "./contracts/matting-v1.schema.json"
+  },
+  "files": [
+    "product.json",
+    "contracts/*.json"
+  ]
+}

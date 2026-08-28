@@ -1,0 +1,48 @@
+{
+  "schemaVersion": 1,
+  "platform": "windows-x64",
+  "bundleSources": [],
+  "componentSources": [
+    {
+      "id": "python-3.12.10-amd64",
+      "kind": "toolchain",
+      "roles": ["client", "server", "all"],
+      "url": "https://www.python.org/ftp/python/3.12.10/python-3.12.10-amd64.exe",
+      "filename": "python-3.12.10-amd64.exe",
+      "bytes": 26964224,
+      "sha256": "67b5635e80ea51072b87941312d00ec8927c4db9ba18938f7ad2d27b328b95fb",
+      "authenticodePublisher": "Python Software Foundation",
+      "licenseId": "PSF-2.0"
+    },
+    {
+      "id": "node-24.19.0-win-x64",
+      "kind": "toolchain",
+      "roles": ["client", "server", "all"],
+      "url": "https://nodejs.org/download/release/v24.19.0/node-v24.19.0-win-x64.zip",
+      "filename": "node-v24.19.0-win-x64.zip",
+      "bytes": 37304352,
+      "sha256": "57f71ab3652e797d84acddc79c81cc9ff1c6ddb2a1974cdb83f00fee9bff4c73",
+      "licenseId": "MIT"
+    },
+    {
+      "id": "vc-redist-14-x64-20260824",
+      "kind": "toolchain",
+      "roles": ["client", "server", "all"],
+      "url": "https://download.visualstudio.microsoft.com/download/pr/9d270333-8b7b-4f96-9458-6fcdb2ec0b25/CC0FF0EB1DC3F5188AE6300FAEF32BF5BEEBA4BDD6E8E445A9184072096B713B/VC_redist.x64.exe",
+      "filename": "vc_redist.x64.exe",
+      "bytes": 25635768,
+      "sha256": "cc0ff0eb1dc3f5188ae6300faef32bf5beeba4bdd6e8e445a9184072096b713b",
+      "authenticodePublisher": "Microsoft Corporation",
+      "licenseId": "Microsoft-Visual-Cpp-Redistributable"
+    }
+  ],
+  "guidedHostSources": [
+    {
+      "id": "nvidia-cuda-12.8-capable-driver",
+      "role": "server",
+      "url": "https://www.nvidia.com/Download/index.aspx",
+      "policy": "detect-then-confirm-official-install",
+      "redistributeInBundle": false
+    }
+  ]
+}

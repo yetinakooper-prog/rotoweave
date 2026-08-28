@@ -1,0 +1,10 @@
+{
+  "schemaVersion": 1,
+  "name": "rotoweave-contracts",
+  "productVersion": "4.0.0",
+  "pythonPackage": "contracts",
+  "pythonInstall": ".",
+  "nodePackage": "@rotoweave/contracts",
+  "schemas": ["protocols.json", "matting-v1.schema.json"],
+  "allowedApplicationDependencies": []
+}
