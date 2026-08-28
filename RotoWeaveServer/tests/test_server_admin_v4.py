@@ -428,6 +428,50 @@ def _wait_operation(center: ModelCenter, operation_id: str) -> dict:
     raise AssertionError("model operation did not finish")
 
 
+def test_model_operation_history_ignores_invalid_ids_without_requerying(
+    tmp_path: Path,
+) -> None:
+    repository = RemoteQueueRepository(tmp_path / "queue.sqlite3")
+    center = ModelCenter(repository, tmp_path)
+    with repository.transaction() as connection:
+        connection.execute(
+            "INSERT INTO model_operations(id,kind,state,stage,progress,detail_json,created_at,updated_at) "
+            "VALUES('asset-invalid-history','scan','passed','passed',1,'{}','2026-01-01','2026-01-01')"
+        )
+        connection.execute(
+            "INSERT INTO model_operations(id,kind,state,stage,progress,detail_json,created_at,updated_at) "
+            "VALUES('model-op-valid-history','verify','passed','passed',1,'{}','2026-01-02','2026-01-02')"
+        )
+
+    assert [item["id"] for item in center.operations()] == ["model-op-valid-history"]
+    assert [item["id"] for item in center.snapshot()["operations"]] == [
+        "model-op-valid-history"
+    ]
+
+
+def test_model_asset_dto_uses_recipe_model_id_for_bound_role() -> None:
+    recipe = model_center_module.ASSETS[0]
+    dto = ModelCenter._asset_dto(
+        {
+            "id": "asset-test",
+            "root_id": "root-test",
+            "role": recipe.role,
+            "model_id": "stale-database-value",
+            "path": f"C:/models/{recipe.filename}",
+            "bytes": recipe.bytes,
+            "sha256": recipe.sha256,
+            "state": "verified",
+            "verification_kind": "official",
+            "verification_contract_digest": "recipe",
+            "verification_receipt_digest": None,
+            "error_text": None,
+            "verified_at": "2026-08-28T00:00:00Z",
+        }
+    )
+
+    assert dto["modelId"] == recipe.model_id
+
+
 def test_native_picker_allows_only_one_dialog(tmp_path: Path) -> None:
     entered = threading.Event()
     release = threading.Event()

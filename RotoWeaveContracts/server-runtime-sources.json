@@ -11,6 +11,18 @@
     "authenticodePublisher": "Python Software Foundation",
     "licenseId": "PSF-2.0"
   },
+  "standardLibrarySources": [
+    {
+      "id": "cpython-3.10.11-enum-source",
+      "revision": "7d4cc5aa854fdea4d01a5b9c59e37c6e62f1103d",
+      "url": "https://raw.githubusercontent.com/python/cpython/7d4cc5aa854fdea4d01a5b9c59e37c6e62f1103d/Lib/enum.py",
+      "filename": "cpython-3.10.11-enum.py",
+      "targetPath": "Lib/enum.py",
+      "bytes": 39831,
+      "sha256": "59a62af0e129ae688f5549d6a273c51c5db80b534521f98dae2e4ceb485d9f75",
+      "licenseId": "PSF-2.0"
+    }
+  ],
   "projectSearchPaths": [
     "..\\..\\..",
     "..\\..\\..\\..\\RotoWeaveContracts"

@@ -699,7 +699,10 @@ class ModelCenter:
             row = connection.execute("SELECT * FROM model_operations WHERE id=?", (operation_id,)).fetchone()
         if row is None:
             raise KeyError(operation_id)
-        value = _row(row)
+        return self._operation_dto(_row(row))
+
+    @staticmethod
+    def _operation_dto(value: dict[str, Any]) -> dict[str, Any]:
         return {
             "id": value["id"],
             "kind": value["kind"],
@@ -718,8 +721,12 @@ class ModelCenter:
 
     def operations(self, limit: int = 20) -> list[dict[str, Any]]:
         with self.repository.connect() as connection:
-            rows = connection.execute("SELECT id FROM model_operations ORDER BY created_at DESC LIMIT ?", (limit,)).fetchall()
-        return [self._operation(str(item["id"])) for item in rows]
+            rows = connection.execute(
+                "SELECT * FROM model_operations WHERE id LIKE 'model-op-%' "
+                "ORDER BY created_at DESC LIMIT ?",
+                (limit,),
+            ).fetchall()
+        return [self._operation_dto(_row(item)) for item in rows]
 
     def cancel_operation(self, operation_id: str) -> dict[str, Any]:
         operation = self._operation(operation_id)
@@ -1538,11 +1545,12 @@ class ModelCenter:
 
     @staticmethod
     def _asset_dto(value: dict[str, Any]) -> dict[str, Any]:
+        role = str(value["role"])
         return {
             "id": value["id"],
             "rootId": value["root_id"],
-            "role": value["role"],
-            "modelId": value["model_id"],
+            "role": role,
+            "modelId": ASSET_BY_ROLE[role].model_id,
             "path": value["path"],
             "bytes": int(value["bytes"]),
             "sha256": value["sha256"],

@@ -777,6 +777,7 @@ def test_server_setup_sources_exclude_models_and_match_runtime_recipe() -> None:
     contract = bootstrap.load_server_runtime_source_contract(WORKSPACE)
     contract_sha = hashlib.sha256(contract_path.read_bytes()).hexdigest()
     assert contract["projectSearchPaths"] == ["..\\..\\..", "..\\..\\..\\..\\RotoWeaveContracts"]
+    assert [item["targetPath"] for item in contract["standardLibrarySources"]] == ["Lib/enum.py"]
     _, runtime_recipe = bootstrap._load_contracts(WORKSPACE)
     revisions = {item["id"]: item["revision"] for item in contract["sources"]}
     for profile in ("high", "ultra"):
@@ -785,6 +786,34 @@ def test_server_setup_sources_exclude_models_and_match_runtime_recipe() -> None:
         assert recipe["runtimeSourceContractSha256"] == contract_sha
         assert recipe["requirementsSha256"] == hashlib.sha256(requirements.read_bytes()).hexdigest()
         assert all(revisions[source_id] in recipe["sourceRevisions"].values() for source_id in contract["profiles"][profile]["sources"])
+
+
+def test_embedded_python_projects_locked_stdlib_source_before_bytecode_zip(tmp_path: Path) -> None:
+    archive = tmp_path / "python-embed.zip"
+    with zipfile.ZipFile(archive, "w") as bundle:
+        bundle.writestr("python.exe", b"python")
+        bundle.writestr("python310.dll", b"python-dll")
+        bundle.writestr("python310.zip", b"bytecode")
+        bundle.writestr("python310._pth", b"python310.zip\n.\n")
+    enum_source = tmp_path / "cpython-3.10.11-enum.py"
+    enum_source.write_text("class Enum:\n    pass\n", encoding="utf-8")
+    runtime = tmp_path / "runtime"
+
+    bootstrap._extract_embedded_python(
+        archive,
+        runtime,
+        inherit_high=False,
+        project_search_paths=["..\\..\\..", "..\\..\\..\\..\\RotoWeaveContracts"],
+        standard_library_sources=[
+            ({"id": "cpython-enum", "targetPath": "Lib/enum.py"}, enum_source)
+        ],
+    )
+
+    assert (runtime / "Lib" / "enum.py").read_text(encoding="utf-8") == enum_source.read_text(encoding="utf-8")
+    assert (runtime / "python310._pth").read_text(encoding="ascii").splitlines()[:2] == [
+        "Lib",
+        "python310.zip",
+    ]
 
 
 def test_dynamic_server_runtime_build_refuses_unapproved_invalid_target(

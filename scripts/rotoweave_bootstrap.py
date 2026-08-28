@@ -435,7 +435,7 @@ def check_server_runtimes(project_root: Path) -> CheckResult:
             ):
                 return CheckResult("server-runtimes", "invalid", f"{profile} 运行时生成回执与当前契约不一致")
             pth = (root / profile / "runtime" / "python310._pth").read_text(encoding="ascii").splitlines()
-            required_pth = ["python310.zip", ".", "Lib\\site-packages"]
+            required_pth = ["Lib", "python310.zip", ".", "Lib\\site-packages"]
             expected_pth = [*required_pth]
             if profile == "ultra":
                 expected_pth.append("..\\..\\high\\runtime\\Lib\\site-packages")
@@ -447,6 +447,20 @@ def check_server_runtimes(project_root: Path) -> CheckResult:
                 return CheckResult("server-runtimes", "invalid", "High 运行时意外继承其他环境")
             if profile == "ultra" and "..\\..\\high\\runtime\\Lib\\site-packages" not in pth:
                 return CheckResult("server-runtimes", "invalid", "Ultra overlay 未按相对路径只读继承 High")
+            for source in source_contract["standardLibrarySources"]:
+                relative = Path(str(source["targetPath"]).replace("/", os.sep))
+                target = root / profile / "runtime" / relative
+                if (
+                    not target.is_file()
+                    or target.is_symlink()
+                    or target.stat().st_size != int(source["bytes"])
+                    or _sha256_file(target) != str(source["sha256"])
+                ):
+                    return CheckResult(
+                        "server-runtimes",
+                        "invalid",
+                        f"{profile} 标准库源码投影无效: {source['id']}",
+                    )
             for source_id in profile_contract["sources"]:
                 source = sources_by_id[str(source_id)]
                 actual_tree = tree_summary(root / profile / "sources" / str(source["targetPath"]))
@@ -1979,12 +1993,21 @@ def load_server_runtime_source_contract(project_root: Path) -> dict[str, Any]:
     if payload.get("schemaVersion") != 1 or payload.get("platform") != PLATFORM_ID:
         raise BootstrapError("Server 固定运行时来源契约 schema 或平台不受支持。")
     python_source = payload.get("python")
+    standard_library_sources = payload.get("standardLibrarySources")
     sources = payload.get("sources")
     profiles = payload.get("profiles")
     bootstrap_packages = payload.get("bootstrapPackages")
     runtime_wheels = payload.get("runtimeWheels")
-    if not isinstance(python_source, dict) or not isinstance(sources, list) or not isinstance(profiles, dict):
-        raise BootstrapError("Server 固定运行时来源契约缺少 python/sources/profiles。")
+    if (
+        not isinstance(python_source, dict)
+        or not isinstance(standard_library_sources, list)
+        or not standard_library_sources
+        or not isinstance(sources, list)
+        or not isinstance(profiles, dict)
+    ):
+        raise BootstrapError(
+            "Server 固定运行时来源契约缺少 python/standardLibrarySources/sources/profiles。"
+        )
     if not isinstance(bootstrap_packages, list) or not bootstrap_packages or not all(isinstance(item, str) and "==" in item for item in bootstrap_packages):
         raise BootstrapError("Server 固定运行时 pip bootstrap 包必须精确锁定。")
     if not isinstance(runtime_wheels, list) or not runtime_wheels:
@@ -2017,6 +2040,37 @@ def load_server_runtime_source_contract(project_root: Path) -> dict[str, Any]:
         or Path(str(python_source.get("filename") or "")).name != str(python_source.get("filename") or "")
     ):
         raise BootstrapError("Server embedded Python 来源缺少精确 HTTPS/bytes/SHA-256。")
+    standard_library_ids: set[str] = set()
+    standard_library_targets: set[str] = set()
+    for source in standard_library_sources:
+        if not isinstance(source, dict):
+            raise BootstrapError("Server 标准库源码来源必须是对象。")
+        source_id = str(source.get("id") or "")
+        filename = str(source.get("filename") or "")
+        target_path = str(source.get("targetPath") or "")
+        revision = str(source.get("revision") or "")
+        normalized_target = target_path.replace("\\", "/")
+        target_parts = normalized_target.split("/")
+        if not source_id or source_id in standard_library_ids:
+            raise BootstrapError(
+                f"Server 标准库源码 id 缺失或重复: {source_id or '<empty>'}"
+            )
+        standard_library_ids.add(source_id)
+        if normalized_target.casefold() in standard_library_targets:
+            raise BootstrapError(f"Server 标准库源码目标重复: {target_path}")
+        standard_library_targets.add(normalized_target.casefold())
+        if (
+            not re.fullmatch(r"[0-9a-f]{40}", revision)
+            or urllib.parse.urlparse(str(source.get("url") or "")).scheme != "https"
+            or Path(filename).name != filename
+            or int(source.get("bytes", -1)) <= 0
+            or not re.fullmatch(r"[0-9a-f]{64}", str(source.get("sha256") or ""))
+            or len(target_parts) < 2
+            or target_parts[0].casefold() != "lib"
+            or any(part in {"", ".", ".."} for part in target_parts)
+            or not normalized_target.casefold().endswith(".py")
+        ):
+            raise BootstrapError(f"Server 标准库源码来源无效: {source_id}")
     source_ids: set[str] = set()
     for source in sources:
         if not isinstance(source, dict):
@@ -2485,6 +2539,7 @@ def _extract_embedded_python(
     *,
     inherit_high: bool,
     project_search_paths: list[str],
+    standard_library_sources: list[tuple[dict[str, Any], Path]],
 ) -> None:
     if runtime_root.exists():
         raise BootstrapError(f"embedded Python staging 目标已存在: {runtime_root}")
@@ -2500,9 +2555,14 @@ def _extract_embedded_python(
             output = runtime_root / normalized
             with archive.open(info, "r") as reader, output.open("xb") as writer:
                 shutil.copyfileobj(reader, writer, length=DOWNLOAD_CHUNK_BYTES)
+    for source, cached_path in standard_library_sources:
+        relative = Path(str(source["targetPath"]).replace("/", os.sep))
+        output = runtime_root / relative
+        output.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copy2(cached_path, output)
     site_packages = runtime_root / "Lib" / "site-packages"
     site_packages.mkdir(parents=True)
-    lines = ["python310.zip", ".", "Lib\\site-packages"]
+    lines = ["Lib", "python310.zip", ".", "Lib\\site-packages"]
     if inherit_high:
         lines.append("..\\..\\high\\runtime\\Lib\\site-packages")
     lines.extend(project_search_paths)
@@ -2621,13 +2681,15 @@ def _probe_server_runtime(runtime_root: Path, profile: str) -> dict[str, Any]:
     high_site = (runtime_root / "high" / "runtime" / "Lib" / "site-packages").resolve(strict=False)
     is_overlay = profile == "ultra"
     script = (
-        "import json,platform;from pathlib import Path;"
+        "import enum,inspect,json,platform;from pathlib import Path;"
         "import torch,numpy,cv2;"
+        "enum_source=inspect.getsource(enum.Enum._generate_next_value_);"
         f"overlay={is_overlay!r};h=Path({str(high_site)!r});t=Path(torch.__file__).resolve();n=Path(numpy.__file__).resolve();"
         "print(json.dumps({'python':platform.python_version(),'torch':torch.__version__,"
         "'cuda':str(torch.version.cuda),'numpy':numpy.__version__,'opencv':cv2.__version__,"
         "'inheritsHigh':overlay and (h==t or h in t.parents),"
-        "'numpyFromHigh':overlay and (h==n or h in n.parents)},sort_keys=True))"
+        "'numpyFromHigh':overlay and (h==n or h in n.parents),"
+        "'stdlibSourceAvailable':'def _generate_next_value_' in enum_source},sort_keys=True))"
     )
     env = os.environ.copy()
     env["PYTHONNOUSERSITE"] = "1"
@@ -2661,6 +2723,8 @@ def _validate_staged_server_runtimes(project_root: Path, staged: Path, contract:
             raise BootstrapError("High 固定运行时意外继承外部 Profile。")
         if profile == "ultra" and (not probe.get("inheritsHigh") or probe.get("numpyFromHigh")):
             raise BootstrapError("Ultra overlay 必须从 High 加载 torch，并从自身 overlay 加载 numpy。")
+        if probe.get("stdlibSourceAvailable") is not True:
+            raise BootstrapError(f"{profile} 固定运行时无法向 TorchScript 提供标准库源码。")
         probes[profile] = probe
     forbidden = [
         path for path in staged.rglob("*")
@@ -2729,11 +2793,47 @@ def build_server_runtimes_from_source(
             },
         )
 
+    standard_library_files: list[tuple[dict[str, Any], Path]] = []
+    standard_library_count = max(1, len(contract["standardLibrarySources"]))
+    for source_index, source in enumerate(contract["standardLibrarySources"]):
+        range_start = 0.04 + 0.01 * (source_index / standard_library_count)
+        range_end = 0.04 + 0.01 * ((source_index + 1) / standard_library_count)
+        cached_path = downloads / str(source["filename"])
+        ready = (
+            cached_path.is_file()
+            and cached_path.stat().st_size == int(source["bytes"])
+            and _sha256_file(cached_path) == str(source["sha256"])
+        )
+        if not ready:
+            cached_path.unlink(missing_ok=True)
+            _download_verified_file(
+                source,
+                cached_path,
+                progress=progress,
+                stage="server-runtime-stdlib-source-download",
+                progress_start=range_start,
+                progress_end=range_end,
+            )
+        else:
+            _emit(
+                progress,
+                "server-runtime-stdlib-source-cache",
+                range_end,
+                f"使用已验证标准库源码缓存 {source['id']}",
+                {
+                    "id": str(source["id"]),
+                    "downloadedBytes": int(source["bytes"]),
+                    "expectedBytes": int(source["bytes"]),
+                    "force": True,
+                },
+            )
+        standard_library_files.append((source, cached_path))
+
     source_archives: dict[str, Path] = {}
     source_count = max(1, len(contract["sources"]))
     for source_index, source in enumerate(contract["sources"]):
-        range_start = 0.04 + 0.08 * (source_index / source_count)
-        range_end = 0.04 + 0.08 * ((source_index + 1) / source_count)
+        range_start = 0.05 + 0.07 * (source_index / source_count)
+        range_end = 0.05 + 0.07 * ((source_index + 1) / source_count)
         archive = downloads / str(source["filename"])
         if not archive.is_file():
             _download_bounded_https_file(
@@ -2798,6 +2898,7 @@ def build_server_runtimes_from_source(
                 runtime,
                 inherit_high=profile == "ultra",
                 project_search_paths=[str(item) for item in contract["projectSearchPaths"]],
+                standard_library_sources=standard_library_files,
             )
             _verify_authenticode(runtime / "python.exe", str(python_source.get("authenticodePublisher") or ""))
             _verify_authenticode(runtime / "python310.dll", str(python_source.get("authenticodePublisher") or ""))
@@ -2880,6 +2981,14 @@ def build_server_runtimes_from_source(
                 "pythonArchiveSha256": python_source["sha256"],
                 "requirementsSha256": recipe["requirementsSha256"],
                 "runtimeSourceContractSha256": contract_sha,
+                "standardLibrarySources": {
+                    str(source["id"]): {
+                        "targetPath": str(source["targetPath"]),
+                        "bytes": int(source["bytes"]),
+                        "sha256": str(source["sha256"]),
+                    }
+                    for source in contract["standardLibrarySources"]
+                },
                 "sourceTrees": source_trees[profile],
             }
             (profile_root / "runtime-build.json").write_text(
