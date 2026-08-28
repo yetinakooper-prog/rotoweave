@@ -18,7 +18,7 @@ _BASE: dict[str, dict[str, Any]] = {
         "layout": "embedded-python",
         "dependencyIdentity": "b027910d69e01ae76263ebd53fca639e5fe401ecf3e63fd8cfd62bd4b7d2aa4e",
         "requirementsSha256": "b027910d69e01ae76263ebd53fca639e5fe401ecf3e63fd8cfd62bd4b7d2aa4e",
-        "runtimeSourceContractSha256": "a14ad196b08ca7d1bfda1d62d107a277cfbf6efc650118752592c3d2dd290d45",
+        "runtimeSourceContractSha256": "ecbc4d3c4650d6ab608e54dcd29295dd789999cfb4ffe750bb5b6a599754cad5",
         "sourceRevisions": {
             "SAM2Matting": "73dd721d77b56749248aefe5e8824d7f61b9d13c",
             "CorridorKey": "97e55a453060745bead1befd293f6e523c4b845c",
@@ -39,7 +39,7 @@ _BASE: dict[str, dict[str, Any]] = {
         "baseProfile": "high",
         "dependencyIdentity": "c39e2655cccc1127580b9815859e1c2d71971cac1170440c2e365be9ffb31983",
         "requirementsSha256": "f45480cdfc09981ab8a5a6f4a968e258a7dfde25bc6d077245013ab277316d24",
-        "runtimeSourceContractSha256": "a14ad196b08ca7d1bfda1d62d107a277cfbf6efc650118752592c3d2dd290d45",
+        "runtimeSourceContractSha256": "ecbc4d3c4650d6ab608e54dcd29295dd789999cfb4ffe750bb5b6a599754cad5",
         "sourceRevisions": {
             "SAM2Matting": "73dd721d77b56749248aefe5e8824d7f61b9d13c",
             "CorridorKey": "97e55a453060745bead1befd293f6e523c4b845c",

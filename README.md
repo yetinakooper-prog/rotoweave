@@ -43,6 +43,10 @@ No model weights are stored in this repository or included in GitHub Release ass
 
 本仓库及 GitHub Release 均不包含任何模型权重。请仅从官方上游页面获取模型，并在使用前自行确认其条款。RotoWeave 作者持有的任何私有授权均不会转移给用户。
 
+Third-party components and models are governed by their respective upstream licenses. Some use restrictive or source-available terms and are not OSI-approved open-source software. Review each upstream license before downloading or using the corresponding component or model.
+
+第三方组件和模型分别受其上游许可约束；其中部分采用限制性或 Source-Available 条款，并非 OSI 认可的开源软件。下载或使用相应组件或模型前，请逐项审阅其上游许可。
+
 | Component / 组件 | Official source / 官方地址 |
 | --- | --- |
 | BiRefNet Lite Matting | https://huggingface.co/ZhengPeng7/BiRefNet_lite-matting |
